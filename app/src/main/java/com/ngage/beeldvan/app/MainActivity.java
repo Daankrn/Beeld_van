@@ -3,16 +3,31 @@ package com.ngage.beeldvan.app;
 import android.app.Activity;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Message;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity
@@ -27,11 +42,66 @@ public class MainActivity extends Activity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+    private Button btnCrop, btnSkip;
+    private Uri mImageCaptureUri;
+    private static final int PICK_FROM_CAMERA = 1;
+    private static final int CROP_FROM_CAMERA = 2;
+    private static final int PICK_FROM_FILE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        // Create Alert Dialog Message
+        final String [] items			= new String [] {getString(R.string.CapturePhoto), getString(R.string.ChoosefromGallery)};
+        ArrayAdapter<String> adapter	= new ArrayAdapter<String> (this, android.R.layout.select_dialog_item,items);
+        AlertDialog.Builder builder		= new AlertDialog.Builder(this);
+
+        builder.setTitle(getString(R.string.ChooseaTask));
+        builder.setAdapter( adapter, new DialogInterface.OnClickListener() {
+            public void onClick( DialogInterface dialog, int item ) { //pick from camera
+                if (item == 0) {
+                    Intent intent 	 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    mImageCaptureUri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
+                            "/bvdh/" + String.valueOf(System.currentTimeMillis()) + "_app_upload.jpg"));
+
+                    intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
+                    try {
+                        intent.putExtra("return-data", true);
+                        startActivityForResult(intent, PICK_FROM_CAMERA);
+                    } catch (ActivityNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } else { //pick from file
+                    Intent intent = new Intent();
+                    intent.setType("image");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Complete action using"), PICK_FROM_FILE);
+                }
+            }
+        } );
+        final AlertDialog dialog = builder.create();
+
+        btnCrop = (Button) findViewById(R.id.btn_crop);
+        btnCrop.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+               dialog.show();
+            }
+        });
+
+        btnSkip = (Button) findViewById(R.id.btn_Skip);
+        btnSkip.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+
+
+            }
+        });
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -51,10 +121,10 @@ public class MainActivity extends Activity
 
         switch (position) {
             case 0:
-               // fragment = new previewFragment();
+                // fragment = new previewFragment();
                 break;
             case 1:
-               // fragment = new FindPeopleFragment();
+                // fragment = new FindPeopleFragment();
                 break;
 
 
@@ -144,9 +214,9 @@ public class MainActivity extends Activity
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
+                                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_message, container, false);
-           TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
             textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
@@ -160,3 +230,5 @@ public class MainActivity extends Activity
     }
 
 }
+
+

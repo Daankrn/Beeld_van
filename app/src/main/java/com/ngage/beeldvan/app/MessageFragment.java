@@ -1,3 +1,5 @@
+package com.ngage.beeldvan.app;
+
 import android.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +20,15 @@ public class MessageFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_message, container, false);
+
+
+
+
+
+
+
+
+
 
         return rootView;
     }

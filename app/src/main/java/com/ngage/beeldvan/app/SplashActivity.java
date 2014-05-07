@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 
 /**
@@ -29,29 +30,30 @@ public class SplashActivity extends Activity
         super.onResume();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         // Obtain the sharedPreference, default to true if not available
-        boolean isSplashEnabled = sp.getBoolean("isSplashEnabled", true);
+        if(NetworkManager.isConnected(this)) {
+            boolean isSplashEnabled = sp.getBoolean("isSplashEnabled", true);
 
-        if (isSplashEnabled)
-        {
-            new Handler().postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    //Finish the splash activity so it can't be returned to.
-                    SplashActivity.this.finish();
-                    // Create an Intent that will start the main activity.
-                    Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
-                    SplashActivity.this.startActivity(mainIntent);
-                }
-            }, SPLASH_DISPLAY_LENGTH);
+            if (isSplashEnabled) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Finish the splash activity so it can't be returned to.
+                        SplashActivity.this.finish();
+                        // Create an Intent that will start the main activity.
+                        Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
+                        SplashActivity.this.startActivity(mainIntent);
+                    }
+                }, SPLASH_DISPLAY_LENGTH);
+            } else {
+                // if the splash is not enabled, then finish the activity immediately and go to main.
+                finish();
+                Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
+                SplashActivity.this.startActivity(mainIntent);
+            }
         }
         else
         {
-            // if the splash is not enabled, then finish the activity immediately and go to main.
-            finish();
-            Intent mainIntent = new Intent(SplashActivity.this, MainActivity.class);
-            SplashActivity.this.startActivity(mainIntent);
+            Toast.makeText(getApplicationContext(), "There was an error connecting to the internet", Toast.LENGTH_SHORT).show();
         }
     }
 }

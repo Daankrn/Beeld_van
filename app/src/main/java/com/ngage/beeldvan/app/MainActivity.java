@@ -6,6 +6,7 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -99,6 +100,10 @@ public class MainActivity extends Activity
 
             public void onClick(View v) {
 
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                ft.addToBackStack("fragment_message");
+                ft.replace(R.id.drawer_layout, new MessageFragment());
+                ft.commit();
 
             }
         });

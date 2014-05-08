@@ -2,7 +2,7 @@
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
-android:id="@+id/mainLayout"
+android:id="@+id/messagefragment"
 android:descendantFocusability="beforeDescendants"
 android:focusableInTouchMode="true"
 android:background="@drawable/backrepeat"
